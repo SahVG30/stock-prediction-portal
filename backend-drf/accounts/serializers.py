@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 
 class UserSerealizer(serializers.ModelSerializer):
-  password=serializers.CharField(writeonly=True)
+  password=serializers.CharField(write_only=True, style={'input_type':'password'})
   class Meta:
     model=User
     fields=['username','email','password']
@@ -11,9 +11,9 @@ class UserSerealizer(serializers.ModelSerializer):
   def create(self,validated_data):
     # user=User.objects.create(**validated_data  ) or
     user=User.objects.create_user(
-      user=validated_data['username'],
-      user=validated_data['email'],
-      user=validated_data['password'],
+      validated_data['username'],
+      validated_data['email'],
+      validated_data['password'],
     )  
     return user
 
