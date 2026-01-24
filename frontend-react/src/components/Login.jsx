@@ -1,93 +1,69 @@
-import React, { useState } from 'react'
+import React, {useContext, useState} from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
+import {useNavigate} from 'react-router-dom'
+import { AuthContext } from '../AuthProvider'
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+  const [error, setError] = useState('')
+  const {isLoggedIn, setIsLoggedIn} = useContext(AuthContext)
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+  const handleLogin = async (e) =>{
+    e.preventDefault();
+    setLoading(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    try {
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/login/', formData)
-      console.log('response.data=>', response.data)
-      
-      // Store token if your backend returns one
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token)
-      }
-      
-      alert('Login successful!')
-      // Redirect to dashboard or home page
-      // window.location.href = '/dashboard'
-    } catch (error) {
-      console.error('Login error:', error.response?.data || error.message)
-      alert('Login failed: ' + (error.response?.data?.message || 'Invalid credentials'))
+    const userData = {username, password}
+    console.log('userData==>', userData);
+
+    try{
+      const response = await axios.post('http://127.0.0.1:8000/api/v1/token/', userData)
+      localStorage.setItem('accessToken', response.data.access)
+      localStorage.setItem('refreshToken', response.data.refresh)
+      console.log('Login successful');
+      setIsLoggedIn(true)
+      navigate('/dashboard')
+    }catch(error){
+      console.error('Invalid credentials')
+      setError('Invalid credentials')
+    }finally{
+      setLoading(false)
     }
   }
-
-  const containerStyle = {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-
-  const formStyle = {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: '40px',
-    borderRadius: '10px',
-    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)'
-  }
+  
 
   return (
-    <div style={containerStyle}>
-      <div className='container'>
-        <div className='row justify-content-center'>
-          <div className='col-md-6'>
-            <div style={formStyle}>
-              <h3 className='text-light text-center mb-4'>Login</h3>
-              <form onSubmit={handleSubmit}>
-                <div className='mb-3'>
-                  <label htmlFor='email' className='form-label text-light'>Email</label>
-                  <input
-                    type='email'
-                    className='form-control'
-                    id='email'
-                    name='email'
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className='mb-3'>
-                  <label htmlFor='password' className='form-label text-light'>Password</label>
-                  <input
-                    type='password'
-                    className='form-control'
-                    id='password'
-                    name='password'
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <button type='submit' className='btn btn-primary w-100'>Login</button>
-              </form>
+    <>
+    <div className='container'>
+        <div className="row justify-content-center">
+            <div className="col-md-6 bg-light-dark p-5 rounded">
+                <h3 className='text-light text-center mb-4'>Login to our Portal</h3>
+                <form onSubmit={handleLogin}>
+                  <div className='mb-3'>
+                    <input type="text" className='form-control' placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)} />
+                  </div>
+                    
+                    <div className='mb-3'>
+                    <input type="password" className='form-control ' placeholder='Set password' value={password} onChange={(e) => setPassword(e.target.value)} />
+                    </div>
+                    
+                    {error && <div className='text-danger'>{error}</div> }
+
+                    {loading ? (
+                      <button type='submit' className='btn btn-info d-block mx-auto' disabled><FontAwesomeIcon icon={faSpinner} spin /> Logging in...</button>
+                    ) : (
+                      <button type='submit' className='btn btn-info d-block mx-auto'>Login</button>
+                    )}
+                    
+                </form>
             </div>
-          </div>
         </div>
-      </div>
     </div>
+    </>
   )
 }
 
