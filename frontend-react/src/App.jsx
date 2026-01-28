@@ -2,13 +2,15 @@ import React from 'react';
 import './App.css';
 import './assets/css/style.css';
 
+
 import Main from './components/Main';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Register from './components/register';
-import Header from './components/header';
-import Footer from './components/footer';
+import Register from './components/Register';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import Login from './components/Login';
 import AuthProvider from './AuthProvider';
+import Dashboard from './components/dashboard/Dashboard';
 
 function App() {
     return (
@@ -20,6 +22,7 @@ function App() {
                         <Route path='/' element={<Main />} />
                         <Route path='/register' element={<Register />}/>
                         <Route path='/login' element={<Login />}/>
+                        <Route path='/dashboard' element={<Dashboard />}/>
                     </Routes>
                 <Footer/>
                 </BrowserRouter>
