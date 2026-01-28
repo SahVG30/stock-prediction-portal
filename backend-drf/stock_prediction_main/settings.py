@@ -74,7 +74,7 @@ TEMPLATES = [
     },
 ]
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Your React frontend
+    "http://localhost:5175",  # Your React frontend
     "http://127.0.0.1:5173",
 ]
 
